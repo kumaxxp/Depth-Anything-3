@@ -1,14 +1,21 @@
 # Python cache
 __pycache__/
 *.py[cod]
-
+*.pyo
+venv/
+.env
 
 # Distribution / packaging
 workspace/
+outputs/
 build/
 dist/
 *.egg-info/
 .gradio/
+*.npz
+*.pth
+*.ckpt
+*.glb
 
 # Test/coverage
 .coverage
@@ -29,6 +36,8 @@ input_images*/
 
 # OS files
 .DS_Store
+Thumbs.db
+'@
 
 .vscode
 src/debug_main.py
