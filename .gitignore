@@ -34,3 +34,5 @@ input_images*/
 src/debug_main.py
 temp*.png
 /outputs
+*.ply
+MeshLab2025.07-linux_x86_64.AppImage

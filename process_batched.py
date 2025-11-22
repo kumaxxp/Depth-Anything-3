@@ -70,8 +70,9 @@ def process_in_batches(
             print(f"✅ Copied {len(batch_files)} images to temporary directory")
             
             # Run inference
+            # Use python3 -m depth_anything_3.cli to ensure we use the local code
             cmd = (
-                f"da3 images \"{batch_input_dir}\" "
+                f"python3 -m depth_anything_3.cli images \"{batch_input_dir}\" "
                 f"--image-extensions \"jpg,jpeg,png\" "
                 f"--model-dir \"{model_dir}\" "
                 f"--export-format {export_format} "
