@@ -71,14 +71,22 @@ def visualize_depth(data, npz_path: str, output_dir: str):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    depth = data['depth']  # Shape: (N, H, W)
-    num_images = depth.shape[0]
-    
+    depth = data['depth']
+
+    # Support both (N, H, W) and single-frame (H, W)
+    if depth.ndim == 3:
+        num_images = depth.shape[0]
+        iter_depth = (depth[i] for i in range(num_images))
+    elif depth.ndim == 2:
+        num_images = 1
+        iter_depth = (depth,)
+    else:
+        raise ValueError(f"Unsupported depth shape: {depth.shape}")
+
     print(f"🎨 Generating depth visualizations for {num_images} images...")
-    
+
     # Generate visualization for each depth map
-    for i in range(num_images):
-        depth_map = depth[i]
+    for i, depth_map in enumerate(iter_depth):
         
         # Create figure
         fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -111,7 +119,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="View NPZ file contents from Depth Anything 3"
     )
-    parser.add_argument("npz_file", help="Path to NPZ file")
+    parser.add_argument("npz_file", nargs='+', help="Path(s) to NPZ file(s)")
     parser.add_argument(
         "--visualize",
         action="store_true",
@@ -126,7 +134,18 @@ def main():
     args = parser.parse_args()
     
     output_dir = args.output_dir if args.visualize else None
-    success = view_npz(args.npz_file, output_dir)
+
+    overall_success = True
+    for npz_path in args.npz_file:
+        # If visualizing and multiple files given, create subfolder per file
+        per_file_out = None
+        if output_dir:
+            base = Path(npz_path).stem
+            per_file_out = str(Path(output_dir) / base)
+        ok = view_npz(npz_path, per_file_out)
+        overall_success = overall_success and ok
+
+    success = overall_success
     
     sys.exit(0 if success else 1)
 
